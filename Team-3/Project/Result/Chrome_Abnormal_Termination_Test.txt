@@ -1,12 +1,6 @@
 PROJECT TEST CASE DOCUMENT
 Process Termination Messages
 
-TEAM MEMBERS
-1. 2520030355 — Ch Suraj Reddy
-2. 2520030387 — Vanka Vijay
-3. 2520030213 — Kevin Josh
-
-
 TEST CASE: Chrome Abnormal Termination
 
 Objective:
