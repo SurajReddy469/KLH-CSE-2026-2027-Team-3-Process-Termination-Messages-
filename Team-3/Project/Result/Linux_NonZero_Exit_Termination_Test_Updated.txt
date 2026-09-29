@@ -1,0 +1,75 @@
+PROJECT TEST CASE DOCUMENT
+Process Termination Messages
+
+TEAM MEMBERS
+1. 2520030355 — Ch Suraj Reddy
+2. 2520030387 — Vanka Vijay
+3. 2520030213 — Kevin Josh
+
+
+TEST CASE: Linux Normal Termination With Non-Zero Exit Status
+
+Objective:
+To demonstrate normal termination of a child process with a non-zero
+exit status and verify that the process monitor correctly identifies
+the exit status.
+
+Prerequisites:
+- Linux/Ubuntu environment should be available.
+- The termination_test program should be compiled and available.
+- The program should support the "error" test option.
+
+
+COMMAND:
+
+./termination_test error
+
+
+PROCEDURE:
+
+1. Open the Linux/Ubuntu terminal.
+2. Navigate to the project directory.
+3. Ensure that the termination_test program is compiled.
+4. Run the following command:
+
+   ./termination_test error
+
+5. Observe the child-process execution.
+6. The child process completes normally with exit status 5.
+7. Observe the termination information displayed by the program.
+8. Record the child PID, termination type, exit status, and termination
+   message.
+
+
+EXPECTED RESULT:
+
+The child process should terminate normally.
+
+The program should identify the termination type as Normal and display
+an exit status of 5.
+
+
+EVIDENCE TO RECORD:
+
+- Child PID
+- Termination type: Normal
+- Exit status: 5
+- Termination message
+- Screenshot of the terminal output
+
+
+EXPECTED DEMONSTRATION OUTPUT:
+
+[Monitor] Starting non-zero exit status test...
+[Monitor] Child process is running.
+[Monitor] Child process terminated.
+[Monitor] Termination type: Normal
+[Monitor] Exit status: 5
+[Monitor] Message: Child terminated with non-zero exit status.
+
+
+CONCLUSION:
+
+This test verifies that the Linux process-monitoring program can
+distinguish normal termination with a non-zero exit status and correctly
+report exit status 5.

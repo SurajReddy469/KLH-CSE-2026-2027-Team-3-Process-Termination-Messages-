@@ -1,0 +1,72 @@
+PROJECT TEST CASE DOCUMENT
+Process Termination Messages
+
+TEAM MEMBERS
+1. 2520030355 — Ch Suraj Reddy
+2. 2520030387 — Vanka Vijay
+3. 2520030213 — Kevin Josh
+
+
+TEST CASE: Chrome Normal Termination
+
+Objective:
+To demonstrate normal termination of a Chrome process and verify that
+the process monitor detects the process ending normally.
+
+Prerequisites:
+- Google Chrome should be installed and running on Windows.
+- All existing Chrome windows/background Chrome processes should be
+  closed before starting the test.
+- The process_monitor program should be available in the src/ directory.
+
+
+PROCEDURE:
+
+1. Close all existing Chrome windows and background Chrome processes.
+2. Open the Linux/WSL terminal.
+3. Navigate to the project src/ directory.
+4. Run the process monitor:
+
+   ./process_monitor
+
+5. Choose option 2 from the program menu.
+6. Press ENTER if the program prompts for input.
+7. Close Chrome normally using the normal window close option.
+8. Observe the process monitor output.
+9. Record the result as test evidence.
+
+
+EXPECTED RESULT:
+
+Chrome should disappear from the Windows process list after it is
+closed normally.
+
+The program should report that the Chrome process terminated normally.
+
+
+EVIDENCE TO RECORD:
+
+- Selected menu option: 2
+- Chrome process termination confirmation
+- Normal termination message
+- Screenshot of the terminal output
+- Confirmation that Chrome is no longer running
+
+
+EXPECTED DEMONSTRATION OUTPUT:
+
+[Monitor] Monitoring Chrome process...
+[Monitor] Chrome process is running.
+[Monitor] Waiting for Chrome to terminate...
+[Monitor] Chrome process ended.
+[Monitor] Termination type: Normal
+[Monitor] Message: Chrome closed normally.
+
+
+IMPORTANT NOTE:
+
+Windows Chrome is monitored externally from WSL. Therefore, a POSIX
+waitpid() exit status is not reported for this test case.
+
+This test demonstrates normal termination detection across the
+Linux/WSL and Windows environments.

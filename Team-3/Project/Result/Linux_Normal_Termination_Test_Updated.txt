@@ -1,0 +1,78 @@
+PROJECT TEST CASE DOCUMENT
+Process Termination Messages
+
+TEAM MEMBERS
+1. 2520030355 — Ch Suraj Reddy
+2. 2520030387 — Vanka Vijay
+3. 2520030213 — Kevin Josh
+
+
+TEST CASE: Linux Normal Termination
+
+Objective:
+To demonstrate normal termination of a child process and verify that
+the process monitor correctly identifies the normal termination and
+exit status.
+
+Prerequisites:
+- Linux/Ubuntu environment should be available.
+- The process-monitoring program should be compiled and available.
+- The system should support the sleep command.
+
+
+COMMAND:
+
+sleep 10
+
+
+PROCEDURE:
+
+1. Open the Linux/Ubuntu terminal.
+2. Navigate to the project directory.
+3. Start the process-monitoring program.
+4. Select the option used for normal termination testing.
+5. Run the following command when prompted:
+
+   sleep 10
+
+6. Allow the command to run for 10 seconds.
+7. Observe the child-process termination.
+8. Record the child PID, termination type, exit status, and termination
+   message displayed by the program.
+
+
+EXPECTED RESULT:
+
+The child process should terminate normally after the sleep command
+completes.
+
+The program should identify the termination type as Normal and report
+an exit status of 0.
+
+
+EVIDENCE TO RECORD:
+
+- Child PID
+- Termination type: Normal
+- Exit status: 0
+- Termination message
+- Screenshot of the terminal output
+
+
+EXPECTED DEMONSTRATION OUTPUT:
+
+[Parent] Child PID: <PID>
+[Monitor] Application is running...
+[Monitor] Waiting with waitpid()...
+[Monitor] Application process ended.
+[Monitor] PID: <PID>
+[Monitor] Termination type: Normal
+[Monitor] Exit status: 0
+[Monitor] Message: Application closed normally.
+
+
+CONCLUSION:
+
+This test verifies that the Linux process-monitoring program can
+successfully detect a child process that completes normally and can
+report its PID, normal termination status, and exit status 0.

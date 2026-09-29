@@ -1,0 +1,74 @@
+PROJECT TEST CASE DOCUMENT
+Process Termination Messages
+
+TEAM MEMBERS
+1. 2520030355 — Ch Suraj Reddy
+2. 2520030387 — Vanka Vijay
+3. 2520030213 — Kevin Josh
+
+
+TEST CASE: Chrome Abnormal Termination
+
+Objective:
+To demonstrate forced/abnormal termination of a Chrome process from
+the Linux/WSL environment using the process monitor.
+
+Prerequisites:
+- Google Chrome should be installed and running on Windows.
+- All existing Chrome windows/background Chrome processes should be closed
+  before starting the test.
+- The process_monitor program should be available in the src/ directory.
+
+
+PROCEDURE:
+
+1. Close all existing Chrome windows and background Chrome processes.
+2. Open the Linux/WSL terminal.
+3. Navigate to the project src/ directory.
+4. Run the process monitor:
+
+   ./process_monitor
+
+5. Choose option 3 from the program menu.
+6. Press ENTER when prompted.
+7. Observe the Chrome process termination message.
+8. Record the displayed result as test evidence.
+
+
+EXPECTED RESULT:
+
+The program uses the Windows command:
+
+taskkill /F /IM chrome.exe
+
+to forcefully terminate the Chrome process.
+
+The program should report that Chrome was terminated using the
+forced/abnormal termination mechanism.
+
+
+EVIDENCE TO RECORD:
+
+- Selected menu option: 3
+- Chrome termination confirmation
+- Forced/abnormal termination message
+- Screenshot of the terminal output
+- Confirmation that Chrome processes were closed
+
+
+EXPECTED DEMONSTRATION OUTPUT:
+
+[Monitor] Chrome termination requested...
+[Monitor] Executing: taskkill /F /IM chrome.exe
+[Monitor] Chrome process termination completed.
+[Monitor] Termination type: Forced / Abnormal
+
+
+IMPORTANT NOTE:
+
+Windows Chrome is monitored externally from WSL. Therefore, a POSIX
+waitpid() exit status is not reported for this test case.
+
+This test demonstrates cross-environment process termination:
+the Linux/WSL program initiates the Windows Chrome termination command,
+while Windows handles the actual Chrome process termination.

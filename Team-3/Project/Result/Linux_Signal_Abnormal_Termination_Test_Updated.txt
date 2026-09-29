@@ -1,0 +1,75 @@
+PROJECT TEST CASE DOCUMENT
+Process Termination Messages
+
+TEAM MEMBERS
+1. 2520030355 — Ch Suraj Reddy
+2. 2520030387 — Vanka Vijay
+3. 2520030213 — Kevin Josh
+
+
+TEST CASE: Linux Signal-Based Abnormal Termination
+
+Objective:
+To demonstrate signal-based abnormal termination of a child process
+and verify that the program identifies the SIGTERM signal correctly.
+
+Prerequisites:
+- Linux/Ubuntu environment should be available.
+- The termination_test program should be compiled and available.
+- The process monitor should be able to execute the signal test.
+
+
+COMMAND:
+
+./termination_test signal
+
+
+PROCEDURE:
+
+1. Open the Linux/Ubuntu terminal.
+2. Navigate to the project directory.
+3. Ensure that the termination_test program is compiled.
+4. Run the following command:
+
+   ./termination_test signal
+
+5. Observe the child-process execution.
+6. The child process is terminated using the SIGTERM signal.
+7. Observe the termination information displayed by the program.
+8. Record the child PID, termination type, signal number, and signal name.
+
+
+EXPECTED RESULT:
+
+The child process should be terminated by SIGTERM.
+
+The program should identify the termination as abnormal/signal-based
+termination and display signal number 15.
+
+
+EVIDENCE TO RECORD:
+
+- Child PID
+- Termination type: Abnormal (Signal)
+- Signal number: 15
+- Signal: SIGTERM
+- Screenshot of the terminal output
+- Final termination message
+
+
+EXPECTED DEMONSTRATION OUTPUT:
+
+[Monitor] Starting signal termination test...
+[Monitor] Child process is running.
+[Monitor] Sending SIGTERM to child process...
+[Monitor] Child process terminated.
+[Monitor] Termination type: Abnormal (Signal)
+[Monitor] Signal number: 15
+[Monitor] Signal: SIGTERM
+
+
+CONCLUSION:
+
+This test verifies that the Linux process-monitoring program can detect
+a child process terminated by a signal and correctly identify SIGTERM
+(signal number 15) as the termination cause.
