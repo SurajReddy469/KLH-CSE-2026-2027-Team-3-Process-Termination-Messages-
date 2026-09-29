@@ -399,10 +399,3 @@ The **Process Termination Messages** project provides a practical demonstration 
 
 The different test cases demonstrate normal termination, non-zero exit status, and signal-based termination. The project also demonstrates external monitoring of Windows Chrome processes from a WSL environment.
 
----
-
-## 👨‍💻 Team
-
-**2520030355 — Ch Suraj Reddy**
-**2520030387 — Vanka Vijay**
-**2520030213 — Kevin Josh**
