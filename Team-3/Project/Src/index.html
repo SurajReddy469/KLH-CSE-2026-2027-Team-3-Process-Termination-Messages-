@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ProcessTerm Monitor</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar">
+      <div class="brand"><span>⚙</span> ProcessTerm</div>
+      <p class="subtitle">OS Process Monitor</p>
+      <nav>
+        <button class="nav-btn active" data-section="dashboard">▦ Dashboard</button>
+        <button class="nav-btn" data-section="create">＋ Create Process</button>
+        <button class="nav-btn" data-section="execute">▶ Execute Process</button>
+        <button class="nav-btn" data-section="monitor">◉ Monitor</button>
+        <button class="nav-btn" data-section="terminate">■ Terminate</button>
+        <button class="nav-btn" data-section="signals">⚡ Signals</button>
+        <button class="nav-btn" data-section="status">✓ Status</button>
+        <button class="nav-btn" data-section="messages">▤ Messages</button>
+        <button class="nav-btn" data-section="testing">⚙ Testing</button>
+      </nav>
+      <div class="sidebar-footer">Linux / C Project<br><small>Process Terminating Messages</small></div>
+    </aside>
+
+    <main class="main">
+      <header class="topbar">
+        <div>
+          <h1>Process Terminating Messages</h1>
+          <p>Operating System Process Monitoring Dashboard</p>
+        </div>
+        <div class="online"><i></i> System Online</div>
+      </header>
+
+      <section id="dashboard" class="section active">
+        <div class="hero">
+          <div>
+            <span class="tag">PROCESS MANAGEMENT</span>
+            <h2>Monitor. Execute. Terminate.</h2>
+            <p>Interactive interface for demonstrating process lifecycle, exit status, signals, and termination messages.</p>
+          </div>
+          <button class="primary" onclick="showSection('create')">＋ Create New Process</button>
+        </div>
+
+        <div class="cards">
+          <div class="card"><span>Active Processes</span><strong id="activeCount">0</strong><small>Currently running</small></div>
+          <div class="card"><span>Normal Terminations</span><strong id="normalCount">0</strong><small>Exit code 0</small></div>
+          <div class="card"><span>Abnormal Terminations</span><strong id="abnormalCount">0</strong><small>Error / signal</small></div>
+          <div class="card"><span>Total Events</span><strong id="eventCount">0</strong><small>System log events</small></div>
+        </div>
+
+        <div class="grid two">
+          <div class="panel">
+            <div class="panel-head"><h3>Process Information</h3><button class="ghost" onclick="refreshTable()">Refresh</button></div>
+            <div class="table-wrap">
+              <table>
+                <thead><tr><th>PID</th><th>PPID</th><th>Status</th><th>Signal</th><th>Exit</th></tr></thead>
+                <tbody id="processTable"></tbody>
+              </table>
+            </div>
+          </div>
+          <div class="panel">
+            <div class="panel-head"><h3>Latest Termination Message</h3></div>
+            <div id="latestMessage" class="message-box success">No termination events yet.</div>
+            <div class="quick-actions">
+              <button onclick="normalTerminate()">Normal Terminate</button>
+              <button onclick="signalTerminate()">Signal Terminate</button>
+              <button onclick="errorTerminate()">Error Terminate</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-head"><h3>Live Process Log</h3><button class="ghost" onclick="clearLogs()">Clear</button></div>
+          <div id="log" class="log"></div>
+        </div>
+      </section>
+
+      <section id="create" class="section">
+        <div class="section-title"><h2>Process Creation</h2><p>Demonstrate parent-child process creation using PID and PPID concepts.</p></div>
+        <div class="panel form-panel">
+          <label>Process Name<input id="processName" value="DemoChild"></label>
+          <label>Parent PID<input id="parentPid" value="1000" type="number"></label>
+          <label>Task<select id="task"><option>File Processing</option><option>Data Calculation</option><option>Background Service</option><option>Test Task</option></select></label>
+          <button class="primary" onclick="createProcess()">Create Child Process</button>
+        </div>
+        <div id="createResult" class="result"></div>
+      </section>
+
+      <section id="execute" class="section">
+        <div class="section-title"><h2>Process Execution</h2><p>Start a selected process and simulate its execution lifecycle.</p></div>
+        <div class="panel form-panel">
+          <label>Process<select id="executePid"></select></label>
+          <label>Execution Time (seconds)<input id="duration" type="number" min="1" max="30" value="5"></label>
+          <button class="primary" onclick="executeProcess()">▶ Start Execution</button>
+        </div>
+        <div class="progress-panel panel">
+          <div class="progress-label"><span>Execution Progress</span><b id="progressText">0%</b></div>
+          <div class="progress"><div id="progressBar"></div></div>
+        </div>
+      </section>
+
+      <section id="monitor" class="section">
+        <div class="section-title"><h2>Process Monitoring</h2><p>View PID, PPID, status, runtime and termination information.</p></div>
+        <div class="panel"><div class="table-wrap"><table><thead><tr><th>PID</th><th>PPID</th><th>Name</th><th>Status</th><th>Runtime</th><th>Reason</th></tr></thead><tbody id="monitorTable"></tbody></table></div></div>
+      </section>
+
+      <section id="terminate" class="section">
+        <div class="section-title"><h2>Process Termination</h2><p>Test normal, error, user, and signal-based termination scenarios.</p></div>
+        <div class="termination-grid">
+          <button class="termination normal" onclick="normalTerminate()">✓ Normal Termination<small>exit(0)</small></button>
+          <button class="termination error" onclick="errorTerminate()">⚠ Error Termination<small>Non-zero exit status</small></button>
+          <button class="termination user" onclick="userTerminate()">✋ User Termination<small>User action</small></button>
+          <button class="termination signal" onclick="signalTerminate()">⚡ Signal Termination<small>kill() / signal</small></button>
+        </div>
+      </section>
+
+      <section id="signals" class="section">
+        <div class="section-title"><h2>Signal Handling</h2><p>Send a simulated termination signal to a running process.</p></div>
+        <div class="panel form-panel">
+          <label>Target Process<select id="signalPid"></select></label>
+          <label>Signal<select id="signalType"><option>SIGTERM</option><option>SIGINT</option><option>SIGKILL</option></select></label>
+          <button class="danger" onclick="sendSignal()">⚡ Send Signal</button>
+        </div>
+        <div class="signal-info">
+          <div><b>SIGTERM</b><span>Controlled termination request</span></div>
+          <div><b>SIGINT</b><span>Interrupt from user</span></div>
+          <div><b>SIGKILL</b><span>Immediate termination</span></div>
+        </div>
+      </section>
+
+      <section id="status" class="section">
+        <div class="section-title"><h2>Termination Status</h2><p>Detailed exit status and termination reason.</p></div>
+        <div id="statusDetail" class="status-detail"></div>
+      </section>
+
+      <section id="messages" class="section">
+        <div class="section-title"><h2>Termination Messages</h2><p>Meaningful messages generated for different termination conditions.</p></div>
+        <div id="messageList" class="message-list"></div>
+      </section>
+
+      <section id="testing" class="section">
+        <div class="section-title"><h2>Testing & Error Identification</h2><p>Run predefined scenarios and verify the generated termination message.</p></div>
+        <div class="test-grid">
+          <button onclick="runTest('Normal completion')">Test Normal Completion</button>
+          <button onclick="runTest('Execution error')">Test Execution Error</button>
+          <button onclick="runTest('User termination')">Test User Termination</button>
+          <button onclick="runTest('Signal termination')">Test Signal Termination</button>
+        </div>
+        <div id="testResult" class="result"></div>
+      </section>
+    </main>
+  </div>
+  <script src="js/script.js"></script>
+</body>
+</html>
