@@ -1,46 +1,39 @@
-# Process Termination Messages
+# Source Code (src)
 
-## 📌 Purpose
+## 📌 About the Project
 
-The source code of the **Process Termination Messages** project implements the complete browser-based process-management simulation.
+**Process Termination Messages** is a browser-based project that demonstrates the concepts of process creation, process execution, process monitoring, process termination, signal handling, and termination messages.
 
-The project uses:
+The project provides an interactive interface where users can create simulated processes, execute them, monitor their status, terminate them in different ways, and view the corresponding termination information.
 
-* **HTML5** for the application structure
-* **CSS3** for the user interface and responsive design
-* **JavaScript** for process simulation, execution, monitoring, termination, signal handling, and testing
+The project is developed using **HTML, CSS, and JavaScript**.
+
+> **Note:** This project is a frontend simulation. It demonstrates Operating Systems process-management concepts through JavaScript and does not directly execute Linux system calls.
 
 ---
 
-## 📂 Source Code Structure
+## 📂 What the `src` Folder Contains
+
+The `src` folder contains the main source code required to run the project.
 
 ```text
 src/
 │
 ├── index.html
 │
-├── js/
-│   └── script.js
+├── css/
+│   └── style.css
 │
-└── css/
-    └── style.css
+└── js/
+    └── script.js
 ```
 
-> In the current project ZIP, these source files are located at the project root and inside the `js/` and `css/` folders. The `src/` structure above can be used if you organize the project into a dedicated source directory.
+### `index.html`
 
----
+Contains the main structure of the project interface.
 
-# 1. `index.html`
+It includes sections for:
 
-## Purpose
-
-`index.html` defines the main structure of the Process Termination Messages application.
-
-It contains the interface sections required for demonstrating the simulated process lifecycle.
-
-### Main Interface Sections
-
-* Dashboard
 * Process Creation
 * Process Execution
 * Process Monitoring
@@ -49,272 +42,156 @@ It contains the interface sections required for demonstrating the simulated proc
 * Termination Status
 * Termination Messages
 * Testing & Error Identification
-* Event Log
 
-### Main User Operations
+### `css/style.css`
 
-The HTML interface allows the user to:
+Contains the complete styling of the project.
 
-* Enter process information
-* Create a simulated process
-* Select a process for execution
-* Start process execution
-* Select termination methods
-* Send simulated signals
-* View process status
-* View termination information
-* Run predefined tests
+It controls:
+
+* Dashboard layout
+* Sidebar
+* Cards
+* Buttons
+* Forms
+* Tables
+* Process status indicators
+* Progress bars
+* Termination sections
+* Responsive design
+
+### `js/script.js`
+
+Contains the functionality and logic of the project.
+
+It handles:
+
+* Creating simulated processes
+* Generating process IDs
+* Executing processes
+* Monitoring process status
+* Process termination
+* Signal simulation
+* Exit codes
+* Termination messages
+* Testing scenarios
+* Updating the interface dynamically
 
 ---
 
-# 2. `js/script.js`
+## ⚙️ Technologies Used
 
-## Purpose
+* **HTML5**
+* **CSS3**
+* **JavaScript**
+* **Web Browser**
 
-`script.js` contains the main application logic.
+No additional libraries or frameworks are required to run the project.
 
-It controls the simulated process lifecycle and dynamically updates the interface.
+---
 
-### Main Responsibilities
+## ▶️ How to Run
+
+### Method 1 — Directly in Browser
+
+1. Open the project folder.
+2. Open the `src` folder.
+3. Double-click:
 
 ```text
-Process Creation
-       ↓
-Process Execution
-       ↓
-Process Monitoring
-       ↓
-Process Termination
-       ↓
-Termination Status
-       ↓
-Termination Messages
+index.html
 ```
 
-### Process Management
+4. The project will open in your default web browser.
 
-The JavaScript maintains simulated process information including:
+---
+
+### Method 2 — Using VS Code
+
+1. Open the project folder in **Visual Studio Code**.
+2. Open the `src` folder.
+3. Open:
+
+```text
+index.html
+```
+
+4. Right-click `index.html`.
+5. Select **Open with Live Server**.
+
+The project will open in your browser.
+
+---
+
+## 🖥️ How to Use the Project
+
+After opening the application:
+
+### 1. Create a Process
+
+Go to **Process Creation**.
+
+Enter the required process details and create a simulated process.
+
+### 2. Execute the Process
+
+Go to **Process Execution** and start the selected process.
+
+The interface displays the process execution progress.
+
+### 3. Monitor the Process
+
+Go to **Process Monitoring** to view:
 
 * PID
 * PPID
 * Process name
 * Status
 * Runtime
-* Reason
-* Signal
-* Exit code
-* Creation information
+* Process reason
 
-### Process Creation
+### 4. Terminate the Process
 
-A new simulated process receives a generated PID.
+Use **Process Termination** to demonstrate different termination scenarios:
 
-The application stores created processes in its internal process collection.
+* Normal termination
+* Error termination
+* User termination
+* Signal termination
 
-### Process Execution
+### 5. View Termination Information
 
-When execution starts:
+Open **Termination Status** to view the final status, exit code, signal, and termination reason.
 
-```text
-Created
-   ↓
-Running
-   ↓
-Completed
-```
+### 6. Run Tests
 
-The interface displays a progress indicator while the simulated process is running.
+Use **Testing & Error Identification** to run the predefined process termination demonstrations.
 
-### Normal Termination
+---
 
-Normal completion is represented by:
+## 🔄 Project Flow
 
 ```text
-Exit Code: 0
-Status: Completed
-```
-
-### Error Termination
-
-An execution error is represented by:
-
-```text
-Exit Code: 1
-Status: Terminated
-```
-
-### User Termination
-
-User interruption is simulated using:
-
-```text
-SIGINT
-Exit Code: 130
-```
-
-### Signal Termination
-
-Signal-based termination is simulated using:
-
-```text
-SIGTERM
-Exit Code: 143
-```
-
-### SIGKILL
-
-The interface also supports simulated:
-
-```text
-SIGKILL
-Exit Code: 137
+Create Process
+      ↓
+Execute Process
+      ↓
+Monitor Process
+      ↓
+Terminate Process
+      ↓
+Check Termination Status
+      ↓
+Display Termination Message
 ```
 
 ---
 
-# 3. `css/style.css`
+## ⚠️ Important Note
 
-## Purpose
+The project is a **frontend simulation** of Operating Systems process-management concepts.
 
-`style.css` controls the visual design and layout of the application.
-
-### Main Styling Components
-
-* Navigation/sidebar
-* Dashboard
-* Cards
-* Forms
-* Buttons
-* Process tables
-* Progress bars
-* Status indicators
-* Termination panels
-* Signal controls
-* Test controls
-* Event logs
-
-### Process Status Styling
-
-Different visual styles are used for process states such as:
-
-```text
-Running
-Completed
-Terminated
-```
-
-### Termination Styling
-
-Termination scenarios are visually separated into:
-
-```text
-Normal
-Error
-User
-Signal
-```
-
----
-
-# 🔄 Source Code Workflow
-
-The application follows this general workflow:
-
-```text
-                User
-                  |
-                  v
-          Process Creation
-                  |
-                  v
-          Process Execution
-                  |
-                  v
-         Process Monitoring
-                  |
-                  v
-        Select Termination
-                  |
-        +---------+---------+
-        |         |         |
-        v         v         v
-     Normal     Error     Signal
-        |         |         |
-        +---------+---------+
-                  |
-                  v
-        Termination Status
-                  |
-                  v
-        Termination Message
-```
-
----
-
-# 🧪 Testing Module
-
-The JavaScript source includes predefined test scenarios for:
-
-### Test 1 — Normal Completion
-
-```text
-Process completes successfully
-Exit Code: 0
-```
-
-### Test 2 — Execution Error
-
-```text
-Process terminates with an error
-Exit Code: 1
-```
-
-### Test 3 — User Termination
-
-```text
-Signal: SIGINT
-Exit Code: 130
-```
-
-### Test 4 — Signal Termination
-
-```text
-Signal: SIGTERM
-Exit Code: 143
-```
-
-These tests allow the behavior of the interface to be demonstrated without requiring actual operating-system process manipulation.
-
----
-
-# 🖥️ Running the Source Code
-
-The application can be opened directly in a browser.
-
-### Option 1 — Open HTML
-
-Open:
-
-```text
-index.html
-```
-
-in a web browser.
-
-### Option 2 — VS Code
-
-1. Open the project in VS Code.
-2. Open `index.html`.
-3. Use **Live Server** if available.
-4. Open the generated local webpage.
-
----
-
-# ⚠️ Implementation Note
-
-This source code implements a **frontend simulation** of process management.
-
-The JavaScript does not directly execute Linux system calls such as:
+The browser application does not directly execute:
 
 ```text
 fork()
@@ -324,30 +201,11 @@ kill()
 exit()
 ```
 
-Instead, the browser application simulates process states, PIDs, signals, exit codes, and termination messages.
-
-This makes the project suitable for visually demonstrating Operating Systems process-management concepts through an interactive interface.
+Instead, JavaScript simulates process IDs, process states, termination types, signals, and exit codes so that the concepts can be demonstrated interactively.
 
 ---
 
-# 🎯 Source Code Objectives
-
-The source implementation is designed to demonstrate:
-
-* Process lifecycle concepts
-* Parent-child process concepts
-* Process creation
-* Process execution
-* Process monitoring
-* Process termination
-* Exit status
-* Signal handling
-* Termination messages
-* Interactive testing
-
----
-
-# 👥 Team Members
+## 👥 Team Members
 
 | Roll Number | Name               |
 | ----------- | ------------------ |
@@ -357,10 +215,24 @@ The source implementation is designed to demonstrate:
 
 ---
 
-# ✅ Summary
+## ✅ Summary
 
-The source code provides the functional foundation of the **Process Termination Messages** interface.
+The `src` folder contains the complete frontend source code of the **Process Termination Messages** project.
 
-`index.html` provides the structure, `script.js` provides the process simulation and application logic, and `style.css` provides the visual presentation and responsive layout.
+The three main files work together as follows:
 
-Together, these files create an interactive demonstration of process creation, execution, monitoring, termination, signal handling, and termination-status reporting.
+```text
+index.html
+    ↓
+Project Interface
+
+style.css
+    ↓
+Project Design
+
+script.js
+    ↓
+Project Functionality
+```
+
+Together, they provide an interactive demonstration of process creation, execution, monitoring, termination, signal handling, and termination messages.
