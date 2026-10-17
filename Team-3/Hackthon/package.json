@@ -1,0 +1,14 @@
+{
+  "name": "linux-process-watchdog-web",
+  "version": "1.0.0",
+  "description": "Interactive Web Dashboard and Simulator for Linux Process Watchdog and Auto-Restart System",
+  "private": true,
+  "scripts": {
+    "dev": "vite web --port 5173 --host",
+    "build": "vite build web",
+    "preview": "vite preview web"
+  },
+  "devDependencies": {
+    "vite": "^6.0.0"
+  }
+}

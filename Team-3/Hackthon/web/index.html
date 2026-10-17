@@ -1,0 +1,849 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Linux Process Watchdog & Auto-Restart System | High Availability Process Supervisor</title>
+  <meta name="description" content="A robust, system-level process supervisor engineered in pure C using POSIX system calls. Features intelligent crash detection, auto-recovery, and zero zombie process guarantee.">
+  
+  <!-- Modern Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  
+  <link rel="stylesheet" href="index.css">
+</head>
+<body class="theme-dark">
+  <!-- Ambient background glow elements -->
+  <div class="ambient-glow glow-cyan"></div>
+  <div class="ambient-glow glow-violet"></div>
+  <div class="ambient-glow glow-emerald"></div>
+
+  <!-- Navigation Bar -->
+  <header class="navbar" id="main-nav">
+    <div class="nav-container">
+      <div class="brand">
+        <div class="brand-badge">
+          <i class="fa-solid fa-shield-halved"></i>
+          <span class="pulse-dot"></span>
+        </div>
+        <div class="brand-text">
+          <span class="brand-title">WATCHDOG<span class="accent-cyan">.OSSP</span></span>
+          <span class="brand-subtitle">POSIX.1-2008 SUPERVISOR</span>
+        </div>
+      </div>
+
+      <nav class="nav-links">
+        <a href="#simulator" class="nav-link active"><i class="fa-solid fa-play"></i> Simulator</a>
+        <a href="#architecture" class="nav-link"><i class="fa-solid fa-cubes"></i> Architecture</a>
+        <a href="#cli-builder" class="nav-link"><i class="fa-solid fa-terminal"></i> CLI Generator</a>
+        <a href="#test-suite" class="nav-link"><i class="fa-solid fa-vial-circle-check"></i> Test Matrix</a>
+        <a href="#viva-hub" class="nav-link"><i class="fa-solid fa-graduation-cap"></i> Viva Voce</a>
+        <a href="#code-viewer" class="nav-link"><i class="fa-solid fa-code"></i> Source C</a>
+      </nav>
+
+      <div class="nav-actions">
+        <div class="status-indicator">
+          <span class="status-ping"></span>
+          <span class="status-text">WSL2 / Linux Ready</span>
+        </div>
+        <button id="quick-run-btn" class="btn btn-secondary btn-sm" title="Quick terminal commands">
+          <i class="fa-solid fa-bolt"></i> Quick Commands
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Quick Commands Modal -->
+  <div id="quick-modal" class="modal-overlay hidden">
+    <div class="modal-card">
+      <div class="modal-header">
+        <div class="modal-title">
+          <i class="fa-solid fa-terminal accent-cyan"></i>
+          <h3>Quick Terminal One-Liners (WSL / Ubuntu)</h3>
+        </div>
+        <button id="close-modal-btn" class="btn-icon" aria-label="Close modal"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="modal-body">
+        <div class="command-snippet">
+          <div class="snippet-header">
+            <span>Run full automated validation test suite</span>
+            <button class="copy-snippet-btn" data-target="cmd-test"><i class="fa-regular fa-copy"></i> Copy</button>
+          </div>
+          <code id="cmd-test">wsl make test</code>
+        </div>
+
+        <div class="command-snippet">
+          <div class="snippet-header">
+            <span>Supervise crash worker (3 restarts, 1s delay)</span>
+            <button class="copy-snippet-btn" data-target="cmd-crash"><i class="fa-regular fa-copy"></i> Copy</button>
+          </div>
+          <code id="cmd-crash">wsl ./bin/watchdog --max-restarts 3 --restart-delay 1 -- ./bin/crash_worker --segfault --delay 2</code>
+        </div>
+
+        <div class="command-snippet">
+          <div class="snippet-header">
+            <span>Inspect existing Linux process live by PID</span>
+            <button class="copy-snippet-btn" data-target="cmd-inspect"><i class="fa-regular fa-copy"></i> Copy</button>
+          </div>
+          <code id="cmd-inspect">wsl ./bin/watchdog --inspect-pid 1</code>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <main>
+    <!-- HERO SECTION -->
+    <section class="hero-section" id="hero">
+      <div class="hero-container">
+        <div class="hero-content">
+          <div class="hero-badge">
+            <span class="badge-icon"><i class="fa-solid fa-microchip"></i></span>
+            <span>Batch 3 • Operating Systems &amp; System Programming</span>
+          </div>
+          <h1 class="hero-title">
+            Linux Process Watchdog &amp; <br>
+            <span class="gradient-text">Auto-Restart System</span>
+          </h1>
+          <p class="hero-lead">
+            A resilient, low-overhead process supervisor engineered in pure <strong>C99</strong>. Continuously monitors child processes using POSIX primitives, intercepts fatal signals (<code class="inline-code">SIGSEGV</code>, <code class="inline-code">SIGABRT</code>, <code class="inline-code">SIGFPE</code>), prevents crash loops, ensures asynchronous signal safety, and reaps all children to guarantee <strong>zero zombie processes</strong>.
+          </p>
+
+          <div class="hero-cta-group">
+            <a href="#simulator" class="btn btn-primary btn-lg">
+              <i class="fa-solid fa-satellite-dish"></i> Launch Live Simulator
+            </a>
+            <a href="#architecture" class="btn btn-secondary btn-lg">
+              <i class="fa-solid fa-diagram-project"></i> Architecture Blueprint
+            </a>
+            <button id="copy-quickstart-btn" class="btn btn-ghost btn-lg">
+              <i class="fa-solid fa-copy"></i> <span id="quickstart-text">Copy Run Command</span>
+            </button>
+          </div>
+
+          <!-- Hero Metrics Bar -->
+          <div class="hero-stats-grid">
+            <div class="stat-card">
+              <div class="stat-icon-wrapper cyan">
+                <i class="fa-solid fa-shield-virus"></i>
+              </div>
+              <div class="stat-details">
+                <div class="stat-value">0 Defunct</div>
+                <div class="stat-label">Zombie Processes Reaped</div>
+              </div>
+            </div>
+
+            <div class="stat-card">
+              <div class="stat-icon-wrapper emerald">
+                <i class="fa-solid fa-rotate-left"></i>
+              </div>
+              <div class="stat-details">
+                <div class="stat-value">Intelligent</div>
+                <div class="stat-label">Exit Discrimination</div>
+              </div>
+            </div>
+
+            <div class="stat-card">
+              <div class="stat-icon-wrapper violet">
+                <i class="fa-solid fa-heart-pulse"></i>
+              </div>
+              <div class="stat-details">
+                <div class="stat-value">/proc/&lt;pid&gt;</div>
+                <div class="stat-label">Live State &amp; RSS Memory</div>
+              </div>
+            </div>
+
+            <div class="stat-card">
+              <div class="stat-icon-wrapper amber">
+                <i class="fa-solid fa-check-double"></i>
+              </div>
+              <div class="stat-details">
+                <div class="stat-value">8 / 8 Pass</div>
+                <div class="stat-label">Automated Test Matrix</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="hero-visual">
+          <div class="visual-frame">
+            <img src="./assets/hero_banner.jpg" alt="Linux Process Watchdog System Graphic" class="hero-banner-img">
+            <div class="visual-overlay">
+              <div class="overlay-badge">
+                <i class="fa-solid fa-circle-check accent-emerald"></i>
+                <span>Active POSIX.1-2008 Kernel Supervision</span>
+              </div>
+              <div class="overlay-metric">
+                <span class="metric-label">Supervisor Core</span>
+                <span class="metric-val">C99 • GCC 15 • Non-blocking waitpid</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 1: INTERACTIVE WATCHDOG SIMULATOR (CENTERPIECE) -->
+    <section class="simulator-section section-padding" id="simulator">
+      <div class="section-container">
+        <div class="section-header">
+          <div class="section-tag"><i class="fa-solid fa-flask"></i> Interactive Sandbox</div>
+          <h2 class="section-title">Live Watchdog Simulation &amp; Process Sandbox</h2>
+          <p class="section-subtitle">
+            Experience the real-time supervision loop. Spawn monitored workers, trigger fatal signal crashes, observe cool-off backoff intervals, and verify the zero-zombie guarantee.
+          </p>
+        </div>
+
+        <div class="simulator-layout">
+          <!-- Left Column: Controls & Presets -->
+          <div class="sim-controls-panel card">
+            <div class="card-header">
+              <div class="card-title">
+                <i class="fa-solid fa-sliders accent-cyan"></i>
+                <span>Supervisor Configuration</span>
+              </div>
+              <span class="pill-badge" id="sim-status-badge">STANDBY</span>
+            </div>
+
+            <!-- Worker Selection Preset -->
+            <div class="control-group">
+              <label class="control-label" for="worker-preset">
+                <span>Select Target Worker:</span>
+                <i class="fa-solid fa-circle-info tooltip-icon" title="Choose which simulated workload the watchdog launches via fork() + execvp()."></i>
+              </label>
+              <select id="worker-preset" class="form-select">
+                <option value="crash_segfault">💥 Crash Worker: Memory Segfault (SIGSEGV)</option>
+                <option value="crash_fpe">➗ Crash Worker: Divide-by-Zero (SIGFPE)</option>
+                <option value="crash_abort">🛑 Crash Worker: Abort Assertion (SIGABRT)</option>
+                <option value="crash_error">⚠️ Error Worker: Non-Zero Exit Code (status 42)</option>
+                <option value="normal_worker">⏱️ Normal Worker: Successful Completion (code 0)</option>
+                <option value="stable_worker">🟢 Stable Worker: Long-Running Daemon</option>
+                <option value="invalid_cmd">🚫 Invalid Executable: execvp() failure (127)</option>
+              </select>
+            </div>
+
+            <!-- Restarts Limit Slider -->
+            <div class="control-group">
+              <div class="slider-header">
+                <label for="max-restarts-slider">Max Restarts Limit:</label>
+                <span class="slider-value" id="max-restarts-val">3 attempts</span>
+              </div>
+              <input type="range" id="max-restarts-slider" min="1" max="10" value="3" class="form-range">
+              <span class="control-hint">Prevents runaway crash loops by stopping after N failures.</span>
+            </div>
+
+            <!-- Cool-off Delay Slider -->
+            <div class="control-group">
+              <div class="slider-header">
+                <label for="restart-delay-slider">Restart Cool-off Delay:</label>
+                <span class="slider-value" id="restart-delay-val">1.5s</span>
+              </div>
+              <input type="range" id="restart-delay-slider" min="0.5" max="5" step="0.5" value="1.5" class="form-range">
+              <span class="control-hint">Delay between restarts to avoid thrashing system CPU/disk.</span>
+            </div>
+
+            <!-- Worker Duration before crash -->
+            <div class="control-group">
+              <div class="slider-header">
+                <label for="crash-delay-slider">Time to Worker Crash / Exit:</label>
+                <span class="slider-value" id="crash-delay-val">2.0s</span>
+              </div>
+              <input type="range" id="crash-delay-slider" min="1" max="6" step="1" value="2" class="form-range">
+              <span class="control-hint">How long the worker runs healthy before triggering its failure.</span>
+            </div>
+
+            <!-- Always Restart Checkbox -->
+            <div class="control-group checkbox-group">
+              <label class="checkbox-container">
+                <input type="checkbox" id="always-restart-toggle">
+                <span class="checkmark"></span>
+                <span class="checkbox-label">
+                  <strong>--always-restart Policy</strong>
+                  <small>Restart worker even on normal exit (code 0)</small>
+                </span>
+              </label>
+            </div>
+
+            <!-- Primary Actions -->
+            <div class="sim-actions-grid">
+              <button id="start-sim-btn" class="btn btn-primary btn-block">
+                <i class="fa-solid fa-play"></i> Start Watchdog
+              </button>
+              <button id="stop-sim-btn" class="btn btn-danger btn-block" disabled>
+                <i class="fa-solid fa-hand"></i> Send SIGINT (Stop)
+              </button>
+            </div>
+
+            <!-- Live Signal Injection during execution -->
+            <div class="signal-injection-box">
+              <div class="injection-header">
+                <i class="fa-solid fa-bolt accent-amber"></i>
+                <span>Inject Signal into Monitored Child:</span>
+              </div>
+              <div class="signal-buttons-grid">
+                <button class="btn btn-sm btn-outline-danger sig-btn" data-sig="SIGSEGV" disabled>SIGSEGV</button>
+                <button class="btn btn-sm btn-outline-danger sig-btn" data-sig="SIGKILL" disabled>SIGKILL</button>
+                <button class="btn btn-sm btn-outline-warning sig-btn" data-sig="SIGTERM" disabled>SIGTERM</button>
+                <button class="btn btn-sm btn-outline-danger sig-btn" data-sig="SIGFPE" disabled>SIGFPE</button>
+                <button class="btn btn-sm btn-outline-danger sig-btn" data-sig="SIGABRT" disabled>SIGABRT</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Right Column: Process Topology & Live Dual-Stream Console -->
+          <div class="sim-visual-panel">
+            <!-- Process State Diagram Nodes -->
+            <div class="process-topology-card card">
+              <div class="card-header">
+                <div class="card-title">
+                  <i class="fa-solid fa-network-wired accent-emerald"></i>
+                  <span>Process Hierarchy &amp; Kernel IPC Pipe</span>
+                </div>
+                <div class="topology-metrics">
+                  <span class="badge-mini"><i class="fa-solid fa-clock"></i> Uptime: <span id="sim-uptime">00:00</span></span>
+                  <span class="badge-mini badge-zombie"><i class="fa-solid fa-ghost"></i> Zombies: <span id="sim-zombies">0</span></span>
+                </div>
+              </div>
+
+              <div class="topology-canvas">
+                <!-- Parent Watchdog Node -->
+                <div class="proc-node parent-node" id="parent-node">
+                  <div class="node-header">
+                    <span class="node-type">PARENT SUPERVISOR</span>
+                    <span class="node-status-pill status-ready" id="parent-status-pill">IDLE</span>
+                  </div>
+                  <div class="node-pid-badge">
+                    <i class="fa-solid fa-server"></i>
+                    <span>PID: <strong id="parent-pid">5120</strong></span>
+                  </div>
+                  <div class="node-details">
+                    <div class="node-stat-row">
+                      <span>Executable:</span>
+                      <code>./bin/watchdog</code>
+                    </div>
+                    <div class="node-stat-row">
+                      <span>Signal Mask:</span>
+                      <code id="sig-mask-display">SIGINT, SIGTERM</code>
+                    </div>
+                    <div class="node-stat-row">
+                      <span>Restarts Done:</span>
+                      <strong id="restarts-count" class="accent-cyan">0 / 3</strong>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Animated Data Pipe -->
+                <div class="ipc-pipe-wrapper">
+                  <div class="ipc-pipe" id="ipc-pipe">
+                    <div class="pipe-pulse" id="pipe-pulse"></div>
+                  </div>
+                  <div class="ipc-labels">
+                    <span class="ipc-tag tag-down" id="ipc-down-label"><i class="fa-solid fa-arrow-right"></i> fork() + execvp()</span>
+                    <span class="ipc-tag tag-up" id="ipc-up-label"><i class="fa-solid fa-arrow-left"></i> waitpid(WNOHANG)</span>
+                  </div>
+                </div>
+
+                <!-- Child Monitored Node -->
+                <div class="proc-node child-node" id="child-node">
+                  <div class="node-header">
+                    <span class="node-type">MONITORED WORKER</span>
+                    <span class="node-status-pill status-dormant" id="child-status-pill">OFFLINE</span>
+                  </div>
+                  <div class="node-pid-badge">
+                    <i class="fa-solid fa-cube"></i>
+                    <span>PID: <strong id="child-pid">--</strong> (PPID: <span id="child-ppid">5120</span>)</span>
+                  </div>
+                  <div class="node-details">
+                    <div class="node-stat-row">
+                      <span>Command:</span>
+                      <code id="child-cmd-display">None</code>
+                    </div>
+                    <div class="node-stat-row">
+                      <span>/proc Status:</span>
+                      <span id="child-proc-state" class="state-idle">State: Offline</span>
+                    </div>
+                    <div class="node-stat-row">
+                      <span>RSS Memory:</span>
+                      <span id="child-rss-mem">0 kB</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Terminal Output Console -->
+            <div class="terminal-card card">
+              <div class="terminal-bar">
+                <div class="terminal-dots">
+                  <span class="dot red"></span>
+                  <span class="dot yellow"></span>
+                  <span class="dot green"></span>
+                </div>
+                <div class="terminal-title">
+                  <i class="fa-solid fa-terminal"></i>
+                  <span>Dual-Stream System Logger Output</span>
+                </div>
+                <div class="terminal-tools">
+                  <button id="clear-term-btn" class="btn-icon-sm" title="Clear console"><i class="fa-solid fa-trash-can"></i></button>
+                  <button id="copy-term-btn" class="btn-icon-sm" title="Copy all logs"><i class="fa-regular fa-copy"></i></button>
+                  <button id="export-log-btn" class="btn-icon-sm" title="Download watchdog.log"><i class="fa-solid fa-download"></i></button>
+                </div>
+              </div>
+
+              <div class="terminal-body" id="term-stream">
+                <div class="term-line term-system">[SYSTEM] Interactive Watchdog Simulator initialized. Select a worker preset and click 'Start Watchdog'.</div>
+                <div class="term-line term-system">[SYSTEM] POSIX.1-2008 signal harness loaded (SIGINT, SIGTERM, SIGSEGV, SIGFPE, SIGABRT).</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 2: ARCHITECTURE & POSIX CORE MECHANICS -->
+    <section class="architecture-section section-padding" id="architecture">
+      <div class="section-container">
+        <div class="section-header">
+          <div class="section-tag"><i class="fa-solid fa-cubes"></i> System Architecture</div>
+          <h2 class="section-title">POSIX Mechanics &amp; Process Lifecycle</h2>
+          <p class="section-subtitle">
+            A breakdown of the low-level operating system concepts, kernel system calls, and concurrency safety guarantees powering the supervisor.
+          </p>
+        </div>
+
+        <!-- 4 Core Pillars Grid -->
+        <div class="arch-pillars-grid">
+          <div class="arch-card card">
+            <div class="arch-icon-box cyan">
+              <i class="fa-solid fa-code-fork"></i>
+            </div>
+            <h3 class="arch-card-title">1. Safe Spawning Engine</h3>
+            <p class="arch-card-text">
+              Uses <code class="inline-code">fork()</code> to replicate the process image and <code class="inline-code">execvp()</code> in the child to replace memory with the target binary. Avoids unsafe <code class="inline-code">system()</code> shells, preventing shell injection and preserving direct PID lineage.
+            </p>
+            <div class="arch-tech-tags">
+              <span>fork()</span>
+              <span>execvp()</span>
+              <span>_exit(127)</span>
+            </div>
+          </div>
+
+          <div class="arch-card card">
+            <div class="arch-icon-box emerald">
+              <i class="fa-solid fa-magnifying-glass-chart"></i>
+            </div>
+            <h3 class="arch-card-title">2. Intelligent Exit Discrimination</h3>
+            <p class="arch-card-text">
+              Differentiates normal task exits (<code class="inline-code">WIFEXITED &amp;&amp; status == 0</code>) from failures (<code class="inline-code">WEXITSTATUS != 0</code>) and fatal signal crashes (<code class="inline-code">WIFSIGNALED &amp;&amp; WTERMSIG</code>) via bitmask status decoding.
+            </p>
+            <div class="arch-tech-tags">
+              <span>waitpid(WNOHANG)</span>
+              <span>WIFEXITED</span>
+              <span>WTERMSIG</span>
+            </div>
+          </div>
+
+          <div class="arch-card card">
+            <div class="arch-icon-box violet">
+              <i class="fa-solid fa-shield-halved"></i>
+            </div>
+            <h3 class="arch-card-title">3. Async-Signal Safety</h3>
+            <p class="arch-card-text">
+              Signal handlers registered via <code class="inline-code">sigaction()</code> only mutate a <code class="inline-code">volatile sig_atomic_t</code> flag. The supervisor politely sends <code class="inline-code">SIGTERM</code>, waits, and escalates to <code class="inline-code">SIGKILL</code> if unresponsive.
+            </p>
+            <div class="arch-tech-tags">
+              <span>sigaction()</span>
+              <span>sig_atomic_t</span>
+              <span>kill()</span>
+            </div>
+          </div>
+
+          <div class="arch-card card">
+            <div class="arch-icon-box amber">
+              <i class="fa-solid fa-ghost"></i>
+            </div>
+            <h3 class="arch-card-title">4. Zero-Zombie Guarantee</h3>
+            <p class="arch-card-text">
+              A zombie process (<code class="inline-code">Z</code> state) consumes kernel PID slots. The watchdog continuously reaps terminated children via <code class="inline-code">waitpid()</code> and performs a sweep during shutdown, ensuring 100% clean process tables.
+            </p>
+            <div class="arch-tech-tags">
+              <span>WNOHANG</span>
+              <span>Reaping Loop</span>
+              <span>Defunct-Free</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Interactive Architecture Diagram & State Machine -->
+        <div class="lifecycle-box card">
+          <div class="card-header">
+            <div class="card-title">
+              <i class="fa-solid fa-diagram-project accent-cyan"></i>
+              <span>Process State Transition Matrix (POSIX.1-2008)</span>
+            </div>
+            <span class="badge-mini">Deterministic Lifecycle</span>
+          </div>
+          <div class="state-diagram-wrapper">
+            <div class="state-flow-step">
+              <div class="state-node" data-state="spawning">
+                <i class="fa-solid fa-dna"></i>
+                <div class="state-name">Spawning</div>
+                <div class="state-sub">fork() == 0</div>
+              </div>
+              <div class="state-arrow"><i class="fa-solid fa-arrow-right"></i></div>
+            </div>
+
+            <div class="state-flow-step">
+              <div class="state-node" data-state="running">
+                <i class="fa-solid fa-bolt"></i>
+                <div class="state-name">Running</div>
+                <div class="state-sub">execvp() OK</div>
+              </div>
+              <div class="state-arrow"><i class="fa-solid fa-arrow-right"></i></div>
+            </div>
+
+            <div class="state-flow-step">
+              <div class="state-node" data-state="evaluated">
+                <i class="fa-solid fa-scale-balanced"></i>
+                <div class="state-name">Evaluation</div>
+                <div class="state-sub">waitpid() status</div>
+              </div>
+              <div class="state-arrow"><i class="fa-solid fa-arrow-right"></i></div>
+            </div>
+
+            <div class="state-flow-step">
+              <div class="state-node" data-state="recovery">
+                <i class="fa-solid fa-arrows-rotate"></i>
+                <div class="state-name">Auto-Recovery</div>
+                <div class="state-sub">Delay + Re-spawn</div>
+              </div>
+              <div class="state-arrow"><i class="fa-solid fa-arrow-right"></i></div>
+            </div>
+
+            <div class="state-flow-step">
+              <div class="state-node" data-state="clean">
+                <i class="fa-solid fa-broom"></i>
+                <div class="state-name">Reaped &amp; Safe</div>
+                <div class="state-sub">0 Zombies Left</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 3: CLI COMMAND BUILDER & GENERATOR -->
+    <section class="cli-section section-padding" id="cli-builder">
+      <div class="section-container">
+        <div class="section-header">
+          <div class="section-tag"><i class="fa-solid fa-terminal"></i> Command Generator</div>
+          <h2 class="section-title">Interactive CLI Command Builder</h2>
+          <p class="section-subtitle">
+            Configure your parameters visually and generate the exact production-ready Linux CLI command to run the supervisor.
+          </p>
+        </div>
+
+        <div class="cli-builder-grid">
+          <!-- Inputs Column -->
+          <div class="cli-config-card card">
+            <h3 class="card-inner-title"><i class="fa-solid fa-sliders accent-cyan"></i> Command Options</h3>
+            
+            <div class="form-row">
+              <div class="form-field">
+                <label for="cli-target-cmd">Command to Supervise:</label>
+                <input type="text" id="cli-target-cmd" class="form-input" value="./bin/crash_worker --segfault --delay 2">
+              </div>
+            </div>
+
+            <div class="form-row-2">
+              <div class="form-field">
+                <label for="cli-restarts">Max Restarts (-1 for inf):</label>
+                <input type="number" id="cli-restarts" class="form-input" value="3" min="-1" max="100">
+              </div>
+              <div class="form-field">
+                <label for="cli-delay">Cool-off Delay (seconds):</label>
+                <input type="number" id="cli-delay" class="form-input" value="2" min="0" max="60">
+              </div>
+            </div>
+
+            <div class="form-row-2">
+              <div class="form-field">
+                <label for="cli-interval">Heartbeat Interval (sec):</label>
+                <input type="number" id="cli-interval" class="form-input" value="1" min="1" max="60">
+              </div>
+              <div class="form-field">
+                <label for="cli-logfile">Log File Path:</label>
+                <input type="text" id="cli-logfile" class="form-input" value="logs/watchdog.log">
+              </div>
+            </div>
+
+            <div class="form-row checkbox-row">
+              <label class="checkbox-container">
+                <input type="checkbox" id="cli-always-restart">
+                <span class="checkmark"></span>
+                <span class="checkbox-label"><strong>--always-restart</strong>: Restart worker even on exit code 0</span>
+              </label>
+            </div>
+          </div>
+
+          <!-- Generated Preview Column -->
+          <div class="cli-output-card card">
+            <div class="card-header">
+              <div class="card-title">
+                <i class="fa-brands fa-linux accent-emerald"></i>
+                <span>Generated Shell Command</span>
+              </div>
+              <button id="copy-cli-btn" class="btn btn-sm btn-primary">
+                <i class="fa-regular fa-copy"></i> <span id="copy-cli-text">Copy Command</span>
+              </button>
+            </div>
+
+            <div class="generated-cli-box">
+              <code id="generated-cli-cmd">wsl ./bin/watchdog --max-restarts 3 --restart-delay 2 --interval 1 --log logs/watchdog.log -- ./bin/crash_worker --segfault --delay 2</code>
+            </div>
+
+            <div class="cli-explanation">
+              <h4>Option Breakdown:</h4>
+              <ul class="options-list" id="cli-breakdown-list">
+                <li><code class="inline-code">--max-restarts 3</code>: Halts supervisor after 3 consecutive failures to avoid infinite crash loops.</li>
+                <li><code class="inline-code">--restart-delay 2</code>: Waits 2 seconds between restart attempts for graceful cool-off.</li>
+                <li><code class="inline-code">--interval 1</code>: Queries Linux <code class="inline-code">/proc</code> health status every 1 second.</li>
+                <li><code class="inline-code">--log logs/watchdog.log</code>: Writes dual-stream ISO timestamped audit logs to file.</li>
+                <li><code class="inline-code">--</code>: POSIX argument separator marking start of the target command.</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 4: AUTOMATED TEST SUITE MATRIX (8/8 PASSED) -->
+    <section class="test-section section-padding" id="test-suite">
+      <div class="section-container">
+        <div class="section-header">
+          <div class="section-tag"><i class="fa-solid fa-vial-circle-check"></i> Quality Assurance</div>
+          <h2 class="section-title">Automated Validation Test Matrix</h2>
+          <p class="section-subtitle">
+            All 8 comprehensive tests in <code class="inline-code">tests/test_watchdog.sh</code> have been executed and verified in Ubuntu Linux WSL2.
+          </p>
+        </div>
+
+        <div class="test-table-card card">
+          <div class="table-responsive">
+            <table class="test-matrix-table">
+              <thead>
+                <tr>
+                  <th>Test ID</th>
+                  <th>Scenario &amp; Description</th>
+                  <th>Input Command Line</th>
+                  <th>POSIX Status Checked</th>
+                  <th>Verification Result</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><span class="test-badge-id">TEST 1</span></td>
+                  <td>
+                    <strong>Normal Process Exit</strong>
+                    <div class="test-desc">Worker exits normally (code 0). Watchdog must NOT trigger restart.</div>
+                  </td>
+                  <td><code>./bin/watchdog -- ./bin/normal_worker --iterations 1</code></td>
+                  <td><code class="code-macro">WIFEXITED &amp;&amp; status == 0</code></td>
+                  <td><span class="pill-badge badge-pass"><i class="fa-solid fa-check"></i> PASSED</span></td>
+                </tr>
+
+                <tr>
+                  <td><span class="test-badge-id">TEST 2</span></td>
+                  <td>
+                    <strong>Crash Recovery (SIGSEGV)</strong>
+                    <div class="test-desc">Worker segfaults. Watchdog catches signal, logs crash, and restarts.</div>
+                  </td>
+                  <td><code>./bin/watchdog --max-restarts 1 -- ./bin/crash_worker --segfault</code></td>
+                  <td><code class="code-macro">WIFSIGNALED &amp;&amp; SIGSEGV</code></td>
+                  <td><span class="pill-badge badge-pass"><i class="fa-solid fa-check"></i> PASSED</span></td>
+                </tr>
+
+                <tr>
+                  <td><span class="test-badge-id">TEST 3</span></td>
+                  <td>
+                    <strong>Max Restarts Enforcement</strong>
+                    <div class="test-desc">Crash worker fails repeatedly. Watchdog halts exactly after 3 attempts.</div>
+                  </td>
+                  <td><code>./bin/watchdog --max-restarts 3 -- ./bin/crash_worker --segfault</code></td>
+                  <td><code class="code-macro">restarts &gt;= max_restarts</code></td>
+                  <td><span class="pill-badge badge-pass"><i class="fa-solid fa-check"></i> PASSED</span></td>
+                </tr>
+
+                <tr>
+                  <td><span class="test-badge-id">TEST 4</span></td>
+                  <td>
+                    <strong>Signal Handling &amp; Zero Zombies</strong>
+                    <div class="test-desc">Watchdog receives SIGINT, kills child cleanly, reaps process table.</div>
+                  </td>
+                  <td><code>kill -INT &lt;watchdog_pid&gt;</code></td>
+                  <td><code class="code-macro">volatile sig_atomic_t</code></td>
+                  <td><span class="pill-badge badge-pass"><i class="fa-solid fa-check"></i> PASSED</span></td>
+                </tr>
+
+                <tr>
+                  <td><span class="test-badge-id">TEST 5</span></td>
+                  <td>
+                    <strong>Invalid Binary Execution</strong>
+                    <div class="test-desc">Target executable does not exist. Child fails execvp and exits 127.</div>
+                  </td>
+                  <td><code>./bin/watchdog -- /nonexistent_binary</code></td>
+                  <td><code class="code-macro">_exit(127)</code></td>
+                  <td><span class="pill-badge badge-pass"><i class="fa-solid fa-check"></i> PASSED</span></td>
+                </tr>
+
+                <tr>
+                  <td><span class="test-badge-id">TEST 6</span></td>
+                  <td>
+                    <strong>CLI Argument Validation</strong>
+                    <div class="test-desc">Rejects negative delays and unknown flags with proper usage errors.</div>
+                  </td>
+                  <td><code>./bin/watchdog --restart-delay -5 -- ls</code></td>
+                  <td><code class="code-macro">getopt_long validation</code></td>
+                  <td><span class="pill-badge badge-pass"><i class="fa-solid fa-check"></i> PASSED</span></td>
+                </tr>
+
+                <tr>
+                  <td><span class="test-badge-id">TEST 7</span></td>
+                  <td>
+                    <strong>Linux /proc Inspection Mode</strong>
+                    <div class="test-desc">Queries /proc/PID/status for live process State, RSS, and Thread count.</div>
+                  </td>
+                  <td><code>./bin/watchdog --inspect-pid $$</code></td>
+                  <td><code class="code-macro">/proc/&lt;pid&gt;/status parser</code></td>
+                  <td><span class="pill-badge badge-pass"><i class="fa-solid fa-check"></i> PASSED</span></td>
+                </tr>
+
+                <tr>
+                  <td><span class="test-badge-id">TEST 8</span></td>
+                  <td>
+                    <strong>Dual-Stream Log File Integrity</strong>
+                    <div class="test-desc">Verifies timestamp format [YYYY-MM-DD HH:MM:SS] and unbuffered file writes.</div>
+                  </td>
+                  <td><code>cat logs/watchdog.log | grep "[INFO]"</code></td>
+                  <td><code class="code-macro">Dual-stream fflush()</code></td>
+                  <td><span class="pill-badge badge-pass"><i class="fa-solid fa-check"></i> PASSED</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 5: VIVA VOCE & OSSP INTERVIEW PREP HUB -->
+    <section class="viva-section section-padding" id="viva-hub">
+      <div class="section-container">
+        <div class="section-header">
+          <div class="section-tag"><i class="fa-solid fa-graduation-cap"></i> Academic Excellence</div>
+          <h2 class="section-title">OSSP Viva Voce &amp; Technical Interview Hub</h2>
+          <p class="section-subtitle">
+            28 curated operating systems viva questions with in-depth technical answers covering system calls, signal safety, and process states.
+          </p>
+        </div>
+
+        <!-- Category Filter & Search Bar -->
+        <div class="viva-toolbar">
+          <div class="viva-search-box">
+            <i class="fa-solid fa-magnifying-glass"></i>
+            <input type="text" id="viva-search" placeholder="Search viva questions (e.g. waitpid, zombie, fork, signal, execvp)...">
+          </div>
+
+          <div class="viva-filter-chips">
+            <button class="chip-btn active" data-category="all">All (28)</button>
+            <button class="chip-btn" data-category="processes">Processes &amp; fork()</button>
+            <button class="chip-btn" data-category="zombies">Zombies &amp; Orphans</button>
+            <button class="chip-btn" data-category="macros">Status Macros</button>
+            <button class="chip-btn" data-category="signals">Signal Safety</button>
+            <button class="chip-btn" data-category="watchdog">Watchdog Design</button>
+          </div>
+        </div>
+
+        <!-- Viva Accordion Container (Populated via JS) -->
+        <div class="viva-accordion" id="viva-accordion-container">
+          <!-- Dynamically populated from app.js -->
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 6: SOURCE CODE & DOCUMENTATION EXPLORER -->
+    <section class="code-section section-padding" id="code-viewer">
+      <div class="section-container">
+        <div class="section-header">
+          <div class="section-tag"><i class="fa-solid fa-code"></i> Engineering Documentation</div>
+          <h2 class="section-title">Modular C Architecture Explorer</h2>
+          <p class="section-subtitle">
+            Inspect the production C99 codebase implementation across process management, signal handling, and logging.
+          </p>
+        </div>
+
+        <div class="code-explorer-card card">
+          <div class="code-tabs-bar">
+            <button class="code-tab-btn active" data-file="watchdog.c">src/watchdog.c</button>
+            <button class="code-tab-btn" data-file="process_manager.c">src/process_manager.c</button>
+            <button class="code-tab-btn" data-file="signal_handler.c">src/signal_handler.c</button>
+            <button class="code-tab-btn" data-file="logger.c">src/logger.c</button>
+            <button class="code-tab-btn" data-file="main.c">src/main.c</button>
+          </div>
+
+          <div class="code-display-body">
+            <div class="code-display-header">
+              <span id="active-filename"><i class="fa-regular fa-file-code"></i> src/watchdog.c</span>
+              <button id="copy-code-btn" class="btn btn-sm btn-ghost"><i class="fa-regular fa-copy"></i> Copy Code</button>
+            </div>
+            <pre class="code-pre"><code id="code-content" class="language-c">// Loading C source file...</code></pre>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="footer-container">
+      <div class="footer-top">
+        <div class="footer-brand">
+          <div class="brand-title">LINUX PROCESS WATCHDOG</div>
+          <p>Academic Batch 3 • Operating Systems &amp; System Programming (OSSP)</p>
+          <div class="compliance-badge">
+            <i class="fa-brands fa-ubuntu"></i> POSIX.1-2008 Standard • GCC 15 Linux Environment
+          </div>
+        </div>
+
+        <div class="footer-links-group">
+          <h4>Documentation</h4>
+          <a href="#simulator">Interactive Simulator</a>
+          <a href="#architecture">Architecture Specification</a>
+          <a href="#test-suite">Automated Test Matrix</a>
+          <a href="#viva-hub">OSSP Viva Voce Q&amp;A</a>
+        </div>
+
+        <div class="footer-links-group">
+          <h4>Linux System Primitives</h4>
+          <code>fork() &amp; execvp()</code>
+          <code>waitpid(WNOHANG)</code>
+          <code>sigaction() &amp; atomic_t</code>
+          <code>/proc/&lt;pid&gt;/status</code>
+        </div>
+      </div>
+
+      <div class="footer-bottom">
+        <p>&copy; 2026 Batch 3 OSSP Team. MIT Licensed. Open source systems engineering project.</p>
+        <div class="footer-back-top">
+          <a href="#hero"><i class="fa-solid fa-arrow-up"></i> Back to Top</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Main JavaScript Logic -->
+  <script type="module" src="app.js"></script>
+</body>
+</html>

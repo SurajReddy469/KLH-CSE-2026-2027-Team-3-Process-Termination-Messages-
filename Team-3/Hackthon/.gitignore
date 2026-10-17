@@ -1,0 +1,23 @@
+# Binaries and object files
+bin/
+*.o
+*.a
+*.so
+
+# Log files
+logs/*.log
+!logs/.gitkeep
+
+# Core dumps
+core
+core.*
+vgcore.*
+
+# Temporary and editor files
+.vscode/
+.idea/
+*.swp
+*.bak
+*.tmp
+node_modules/
+dist/
